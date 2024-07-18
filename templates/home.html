@@ -1,0 +1,31 @@
+{% extends "base.html" %} 
+{% block title %} Home {% endblock %} 
+{% block content %}
+<style>
+  .container, body {
+    background: linear-gradient(to right, #141e30, #243b55); 
+    color: white; 
+    padding: 20px; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  }
+
+  h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    margin-top: 40px;
+    font-size: 2em;
+  }
+
+  p {
+    font-size: 1.2em;
+  }
+</style>
+<div class="container">
+  <h1>Welcome, {{ current_user.username }}!</h1>
+</div>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}
