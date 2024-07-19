@@ -27,7 +27,8 @@ class Course(db.Model):
     description = db.Column(db.String(250), nullable=False, unique=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     modules = db.relationship('Module', backref='course', lazy=True, cascade="all, delete-orphan")
-    
+    enrolled = db.Column(db.Boolean, default=False)
+
     def __repr__(self):
         return f"Course('{self.title}', '{self.description}')"
 

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Modules{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Modules for {{ course.title }}</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="title">Module Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Module Description</label>
+            <textarea class="form-control" id="description" name="description" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Module</button>
+    </form>
+    <h2 class="my-4">Existing Modules</h2>
+    <ul class="list-group">
+        {% for module in modules %}
+        <li class="list-group-item">
+            {{ module.title }} - {{ module.description }}
+            <form action="{{ url_for('delete_module', module_id=module.id) }}" method="POST" class="float-right">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+            <a href="{{ url_for('manage_lessons', module_id=module.id) }}" class="btn btn-secondary btn-sm float-right mr-2">Lessons</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('manage_courses') }}" class="btn btn-secondary btn-sm mt-4">Back to Courses</a>
+</div>
+{% endblock %}

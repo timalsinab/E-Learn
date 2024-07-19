@@ -6,7 +6,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, U
 from flask_migrate import Migrate
 from forms import LoginForm, RegistrationForm
 import os
-from models import db , User
+from models import db , User, Course, Module, Lesson
 
 
 app = Flask(__name__, instance_relative_config=True)
@@ -64,6 +64,76 @@ def logout():
     return redirect(url_for('home'))
 
 
+@app.route('/courses', methods=['GET', 'POST'])
+def manage_courses():
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        new_course = Course(title=title, description=description)
+        db.session.add(new_course)
+        db.session.commit()
+        flash('Course added successfully!', 'success')
+        return redirect(url_for('manage_courses'))
+    
+    courses = Course.query.all()
+    return render_template('courses.html', courses=courses)
+
+@app.route('/courses/<int:course_id>/delete', methods=['POST'])
+def delete_course(course_id):
+    course = Course.query.get(course_id)
+    if course:
+        db.session.delete(course)
+        db.session.commit()
+        flash('Course deleted successfully!', 'success')
+    return redirect(url_for('manage_courses'))
+
+@app.route('/courses/<int:course_id>/modules', methods=['GET', 'POST'])
+def manage_modules(course_id):
+    course = Course.query.get(course_id)
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        new_module = Module(title=title, description=description, course_id=course_id)
+        db.session.add(new_module)
+        db.session.commit()
+        flash('Module added successfully!', 'success')
+        return redirect(url_for('manage_modules', course_id=course_id))
+    
+    modules = Module.query.filter_by(course_id=course_id).all()
+    return render_template('modules.html', course=course, modules=modules)
+
+@app.route('/modules/<int:module_id>/delete', methods=['POST'])
+def delete_module(module_id):
+    module = Module.query.get(module_id)
+    if module:
+        db.session.delete(module)
+        db.session.commit()
+        flash('Module deleted successfully!', 'success')
+    return redirect(url_for('manage_modules', course_id=module.course_id))
+
+@app.route('/modules/<int:module_id>/lessons', methods=['GET', 'POST'])
+def manage_lessons(module_id):
+    module = Module.query.get(module_id)
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        new_lesson = Lesson(title=title, content=content, module_id=module_id)
+        db.session.add(new_lesson)
+        db.session.commit()
+        flash('Lesson added successfully!', 'success')
+        return redirect(url_for('manage_lessons', module_id=module_id))
+    
+    lessons = Lesson.query.filter_by(module_id=module_id).all()
+    return render_template('lessons.html', module=module, lessons=lessons)
+
+@app.route('/lessons/<int:lesson_id>/delete', methods=['POST'])
+def delete_lesson(lesson_id):
+    lesson = Lesson.query.get(lesson_id)
+    if lesson:
+        db.session.delete(lesson)
+        db.session.commit()
+        flash('Lesson deleted successfully!', 'success')
+    return redirect(url_for('manage_lessons', module_id=lesson.module_id))
 
 if __name__ == '__main__':
     app.run(debug=True)
