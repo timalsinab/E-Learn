@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-import datetime 
+from datetime import datetime
 
 db = SQLAlchemy() 
 # Define your models
@@ -49,7 +49,7 @@ class Lesson(db.Model):
     title = db.Column(db.String(50), nullable=False, unique=True)
     content = db.Column(db.Text, nullable=False)
     quiz = db.Column(db.Text, nullable=True)  # Assuming quiz is stored as JSON or similar
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow())
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'), nullable=False)
 
     # Additional fields for completion status
