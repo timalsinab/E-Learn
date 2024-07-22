@@ -1,0 +1,73 @@
+/* Overall container styling */
+#overall-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f9;
+}
+
+/* Chat box styling */
+#chat-box {
+    width: 400px;
+    height: 600px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Chat header styling */
+#chat-header {
+    padding: 20px;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Chat container styling */
+#chat-container {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f4f4f9;
+}
+
+/* User and bot messages styling */
+.user-message {
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #e1f5fe;
+    border-radius: 10px;
+}
+
+.bot-message {
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #fce4ec;
+    border-radius: 10px;
+}
+
+/* Input form styling */
+#user-input-form {
+    display: flex;
+    border-top: 1px solid #ddd;
+}
+
+#user-input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 0 0 0 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0 0 10px 0;
+}

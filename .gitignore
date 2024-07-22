@@ -1,0 +1,2 @@
+# dont share environment variables
+.env
