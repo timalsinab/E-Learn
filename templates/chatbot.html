@@ -1,47 +1,53 @@
 {% extends "base.html" %}
+{% block content %}	
+<body>
+    <div id ="overall-container">
+        <div id="chat-container">
+            <!-- Chat messages will be displayed here -->
+            {% for message in chat_messages %}
+            <div>{{ message }}</div>
+            {% endfor %}
+        </div>
+        <form id="user-input-form">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button type="submit">Send</button>
+        </form>
+    
+        <script>
+            document.getElementById('user-input-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                var userInput = document.getElementById('user-input').value;
+                
+                // GET: user types in the text field, that string 
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: userInput })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Update chat UI with bot's response
+                    let chatContainer = document.getElementById('chat-container');
+                    let userMessageDiv = document.createElement('div');
+                    let botMessageDiv = document.createElement('div');
+                    
+                    userMessageDiv.textContent = `User: ${userInput}`;
+                    botMessageDiv.textContent = `Bot: ${data.message}`;
 
-{% block title %} Chatbot {% endblock %}
-
-{% block content %}
-  <!-- Main content for the chatbot page -->
-  <div id="chatbox" style="position: fixed; bottom: 0; right: 0; width: 300px; max-width: 100%; height: 400px; background-color: #fff; border: 1px solid #ddd; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px; display: none; flex-direction: column;">
-    <div id="chatOutput" style="flex: 1; overflow-y: auto; padding: 10px; border-bottom: 1px solid #ddd;"></div>
-    <textarea id="chatInput" style="border: none; padding: 10px; width: 100%; height: 60px; resize: none;" placeholder="Type your message here..."></textarea>
-  </div>
-  <button id="chatToggle" style="position: fixed; bottom: 20px; right: 20px; background-color: #007bff; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.1);">Chat</button>
-{% endblock %}
-
-{% block extra_scripts %}
-  <script>
-    $(document).ready(function () {
-      // Toggle chatbox visibility
-      $('#chatToggle').on('click', function () {
-        $('#chatbox').toggle();
-      });
-
-      // Send message to the server
-      $('#chatInput').on('keypress', function (e) {
-        if (e.which === 13 && !e.shiftKey) {
-          e.preventDefault();
-          const message = $(this).val();
-          const context = ""; // Add context if needed
-
-          fetch('/ask_tutor', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ message: message, context: context })
-          })
-          .then(response => response.json())
-          .then(data => {
-            $('#chatOutput').append(`<p>User: ${message}</p>`);
-            $('#chatOutput').append(`<p>Tutor: ${data.reply}</p>`);
-            $('#chatInput').val(''); // Clear input field
-            $('#chatOutput').scrollTop($('#chatOutput')[0].scrollHeight); // Scroll to the bottom
-          });
-        }
-      });
-    });
-  </script>
+                    
+                    chatContainer.appendChild(userMessageDiv);
+                    chatContainer.appendChild(botMessageDiv);
+                    
+                    // Clear user input field
+                    document.getElementById('user-input').value = '';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        </script>
+    </div>
+</body>
 {% endblock %}
