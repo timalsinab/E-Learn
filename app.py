@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request,request
+from flask import Flask, render_template, redirect, url_for, flash, request,jsonify
 
 from flask_bcrypt import Bcrypt
 from flask_behind_proxy import FlaskBehindProxy
@@ -6,6 +6,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, U
 from flask_migrate import Migrate
 from forms import LoginForm, RegistrationForm
 import os
+import openai
 from models import db , User, Course, Module, Lesson
 
 
@@ -19,6 +20,8 @@ proxied = FlaskBehindProxy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+# Configure OpenAI API Key
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 with app.app_context():
     db.create_all()
@@ -134,6 +137,24 @@ def delete_lesson(lesson_id):
         db.session.commit()
         flash('Lesson deleted successfully!', 'success')
     return redirect(url_for('manage_lessons', module_id=lesson.module_id))
+
+@app.route("/chatbot", methods=['POST'])
+@login_required
+def ask_tutor():
+    if request.method == 'POST':
+        user_input = request.json.get('message')
+        # Additional context for better responses later on
+
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=f"User: {user_input}\nTutor:",
+            max_tokens=200,
+            stop=["User:", "Tutor:"]
+        )
+        
+        return jsonify({'reply': response.choices[0].text.strip()})
+
+    return render_template('chatbot.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
