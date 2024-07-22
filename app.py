@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request,request
+from flask import Flask, render_template, redirect, url_for, flash, request,jsonify
 
 from flask_bcrypt import Bcrypt
 from flask_behind_proxy import FlaskBehindProxy
@@ -6,6 +6,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, U
 from flask_migrate import Migrate
 from forms import LoginForm, RegistrationForm
 import os
+from bot import get_user_response
 from models import db , User, Course, Module, Lesson
 
 
@@ -134,6 +135,20 @@ def delete_lesson(lesson_id):
         db.session.commit()
         flash('Lesson deleted successfully!', 'success')
     return redirect(url_for('manage_lessons', module_id=lesson.module_id))
+
+@app.route("/chat")
+@login_required
+def chat():
+    return render_template('chatbot.html')
+
+@app.route("/chat", methods=['POST'])
+@login_required
+def chatting():
+    if request.is_json:
+        user_msg = request.json.get('message', '')
+        bot_msg = get_user_response(user_msg)
+        response = {'message': bot_msg}
+        return jsonify(response), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

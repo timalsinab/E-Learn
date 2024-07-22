@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div id="overall-container">
+        <div id="chat-box">
+            <div id="chat-header">
+                AI Tutor Chat
+            </div>
+            <div id="chat-container">
+                <!-- Chat messages will be displayed here -->
+                {% for message in chat_messages %}
+                <div class="{{ message.type }}">{{ message.text }}</div>
+                {% endfor %}
+            </div>
+            <form id="user-input-form">
+                <input type="text" id="user-input" placeholder="Type your message...">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('user-input-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var userInput = document.getElementById('user-input').value;
+            
+            // POST: user types in the text field, that string 
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update chat UI with bot's response
+                let chatContainer = document.getElementById('chat-container');
+                let userMessageDiv = document.createElement('div');
+                let botMessageDiv = document.createElement('div');
+                
+                userMessageDiv.className = 'user-message';
+                userMessageDiv.textContent = `User: ${userInput}`;
+                
+                botMessageDiv.className = 'bot-message';
+                botMessageDiv.textContent = `Bot: ${data.message}`;
+
+                chatContainer.appendChild(userMessageDiv);
+                chatContainer.appendChild(botMessageDiv);
+                
+                // Clear user input field
+                document.getElementById('user-input').value = '';
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+{% endblock %}
