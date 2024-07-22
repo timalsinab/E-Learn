@@ -6,7 +6,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, U
 from flask_migrate import Migrate
 from forms import LoginForm, RegistrationForm
 import os
-import openai
+from bot import get_user_response
 from models import db , User, Course, Module, Lesson
 
 
@@ -20,8 +20,6 @@ proxied = FlaskBehindProxy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# Configure OpenAI API Key
-openai.api_key = os.getenv('OPENAI_API_KEY')
 
 with app.app_context():
     db.create_all()
@@ -138,28 +136,19 @@ def delete_lesson(lesson_id):
         flash('Lesson deleted successfully!', 'success')
     return redirect(url_for('manage_lessons', module_id=lesson.module_id))
 
-@app.route('/chatbot')
+@app.route("/chat")
 @login_required
-def chatbot():
+def chat():
     return render_template('chatbot.html')
 
-@app.route("/ask_tutor", methods=['POST'])
+@app.route("/chat", methods=['POST'])
 @login_required
-def ask_tutor():
-    if request.method == 'POST':
-        user_input = request.json.get('message')
-        # Additional context for better responses later on
-
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=f"User: {user_input}\nTutor:",
-            max_tokens=200,
-            stop=["User:", "Tutor:"]
-        )
-        
-        return jsonify({'reply': response.choices[0].text.strip()})
-
-    return render_template('chatbot.html')
+def chatting():
+    if request.is_json:
+        user_msg = request.json.get('message', '')
+        bot_msg = get_user_response(user_msg)
+        response = {'message': bot_msg}
+        return jsonify(response), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
