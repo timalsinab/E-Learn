@@ -17,3 +17,4 @@ Werkzeug==2.3.6
 urllib3==2.0.3
 flask_migrate
 python-dotenv
+openai
