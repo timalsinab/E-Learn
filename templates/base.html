@@ -8,14 +8,11 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='overlay.css') }}"
-    />
+    <style>
+      .navbar-nav .nav-link {
+        color: white !important;
+      }
+    </style>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -32,18 +29,23 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <a href="{{ url_for('manage_courses') }}" class="navbar-brand">
-        <i class="fa fa-fw fa-book"></i> Courses
-      </a>
-      <a href="#" class="navbar-brand">
-        <i class="fa fa-fw fa-lightbulb-o"></i> Interview Preparation
-      </a>
-      <a href="#" class="navbar-brand">
-        <i class="fa fa-fw fa-video-camera"></i> Mock Interview
-      </a>
-      <a href="{{ url_for('chat') }}" class="navbar-brand">
-        <i class="fa fa-comments"></i>AI Tutor
-      </a>
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      />
+
+      <a href="{{ url_for('manage_courses') }}" class="navbar-brand"
+        ><i class="fa fa-fw fa-book"></i> Courses</a
+      >
+      <a href="#" class="navbar-brand"
+        ><i class="fa fa-fw fa-lightbulb-o"></i> Interview Preparation</a
+      >
+      <a href="#" class="navbar-brand"
+        ><i class="fa fa-fw fa-video-camera"></i> Mock Interview</a
+      >
+      <a href="{{ url_for('chat') }}" class="navbar-brand"
+        ><i class="fa fa-comments"></i>AI Tutor</a
+      >
 
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
@@ -64,26 +66,10 @@
     </nav>
 
     <div class="container mt-4">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-      {% endwith %}
-      {% block content %}{% endblock %}
-    </div>
-
-    <!-- Chat overlay HTML -->
-    <div id="chat-overlay">
-      <div id="chatbox">
-        <div id="chat-output"></div>
-        <form id="chat-input-form">
-          <input type="text" id="chat-input" placeholder="Type your message...">
-          <button type="submit">Send</button>
-        </form>
-      </div>
-      <button id="chat-toggle">Chat</button>
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %} {% block content %}{% endblock %}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -94,35 +80,6 @@
       $(document).ready(function () {
         $(".navbar-nav>li>a").on("click", function () {
           $(".navbar-collapse").collapse("hide");
-        });
-        
-        // Toggle chatbox visibility
-        document.getElementById('chat-toggle').addEventListener('click', function () {
-          const chatbox = document.getElementById('chatbox');
-          chatbox.style.display = chatbox.style.display === 'none' ? 'flex' : 'none';
-        });
-
-        // Handle form submission
-        document.getElementById('chat-input-form').addEventListener('submit', function (event) {
-          event.preventDefault();
-          const userInput = document.getElementById('chat-input').value;
-          
-          fetch('/chat', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ message: userInput })
-          })
-          .then(response => response.json())
-          .then(data => {
-            const chatOutput = document.getElementById('chat-output');
-            chatOutput.innerHTML += `<div>User: ${userInput}</div>`;
-            chatOutput.innerHTML += `<div>Bot: ${data.message}</div>`;
-            document.getElementById('chat-input').value = '';
-            chatOutput.scrollTop = chatOutput.scrollHeight;
-          })
-          .catch(error => console.error('Error:', error));
         });
       });
     </script>
