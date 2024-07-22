@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ course.title }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ course.title }}</h1>
+    <p>{{ course.description }}</p>
+    
+    {% for module in course.modules %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>{{ module.title }}</h5>
+            <p>{{ module.description }}</p>
+        </div>
+        <div class="card-body">
+            {% for lesson in module.lessons %}
+            <div class="lesson">
+                <h6>{{ lesson.title }}</h6>
+                <p>{{ lesson.content }}</p>
+            </div>
+            <hr>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    
+    <a href="{{ url_for('manage_courses') }}" class="btn btn-primary">Back to Courses</a>
+</div>
+{% endblock %}
