@@ -19,9 +19,9 @@ def get_user_response(user_message):
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         max_tokens = 150,
-        temperature = 0,
+        temperature = 0.5,
         messages=[
-            {"role": "system", "content": "You are an AI tutor that provides detailed explanations and helps students understand complex concepts related to their course material. Answer the user's questions as thoroughly as possible."},
+            {"role": "system", "content": "You are an AI tutor specializing in computer science. Your task is to provide detailed, clear, and accurate explanations to help students understand complex concepts and Interview guidance. Your responses should be tailored to the user's current level of knowledge and aim to clarify difficult topics effectively."},
             {"role": "user", "content": user_message}
         ]
     )
