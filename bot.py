@@ -21,10 +21,8 @@ def get_user_response(user_message):
         max_tokens = 150,
         temperature = 0,
         messages=[
-              {"role": "system", "content": "You are a professional personal finance advisor; you are kind and helpful."},
-              {"role": "user", "content": "I have $750 dollars to put into my account. How should I allocate it?"},
-              {"role": "system", "content": "You should put aside some money to pay your bills and rent, and then put some in savings."},
-              {"role": "user", "content": user_message}
+            {"role": "system", "content": "You are an AI tutor that provides detailed explanations and helps students understand complex concepts related to their course material. Answer the user's questions as thoroughly as possible."},
+            {"role": "user", "content": user_message}
         ]
     )
     return response.choices[0].message.content
