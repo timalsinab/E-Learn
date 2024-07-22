@@ -1,0 +1,116 @@
+{% extends "base.html" %} 
+{% block title %} Landing {% endblock %} 
+{% block content %}
+<style>
+  body {
+    min-height: 100vh;
+    /*display: flex;*/
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    background: #243b55;
+    color: white;
+  }
+  .container {
+    /*display: flex;*/
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+  }
+  .wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+  }
+
+  .wrapper .static-txt{
+    display: flex;
+    font-size: 30px;
+    font-weight: 400;
+  }
+
+  .wrapper .dynamic-txt{
+    margin-left: 5px;
+    line-height: 90px;
+    height: 90px;
+    /*background-color: orange;*/
+    overflow: hidden;
+  }
+
+  .dynamic-txt li {
+    list-style: none;
+    color: orange;
+    font-size: 30px;
+    font-weight: 400;
+    top: 0;
+    position: relative;
+    animation: slide 9s steps(3) infinite;
+  }
+
+  .dynamic-txt li::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #243b55;
+    border-left: 2px solid orange;
+    animation: typing 3s steps(14) infinite;
+  }
+
+  h1 {
+    font-size: 45px;
+    text-align: center;
+  }
+
+  @keyframes typing{
+    40%,
+    60%{
+        left: calc(100% + 15px);
+    }
+    100%{
+        left: 0;
+    }
+  }
+
+  @keyframes slide{
+    100%{
+        top: -265px;
+    }
+  }
+  /* .container, body {
+    background: linear-gradient(to right, #141e30, #243b55); 
+    color: white; 
+    padding: 20px; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    margin-top: 40px;
+    font-size: 2em;
+  }
+
+  p {
+    font-size: 1.2em;
+  } */
+</style>
+<div class="container">
+  <h1>Welcome to E-Learn</h1>
+  <div class="wrapper">
+    <div class="static-txt">Your new </div>
+    <ul class="dynamic-txt">
+        <li>Open AI Tutor</li>
+        <li>Career Advisor</li>
+        <li>Learning Guide</li>
+    </ul>
+  </div>
+</div>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}
