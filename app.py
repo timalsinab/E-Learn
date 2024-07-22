@@ -138,7 +138,12 @@ def delete_lesson(lesson_id):
         flash('Lesson deleted successfully!', 'success')
     return redirect(url_for('manage_lessons', module_id=lesson.module_id))
 
-@app.route("/chatbot", methods=['POST'])
+@app.route('/chatbot')
+@login_required
+def chatbot():
+    return render_template('chatbot.html')
+
+@app.route("/ask_tutor", methods=['POST'])
 @login_required
 def ask_tutor():
     if request.method == 'POST':
