@@ -307,5 +307,13 @@ def completed_courses():
     completed_courses = Course.query.filter_by(completed=True).all()
     return render_template('completed_courses.html', completed_courses=completed_courses)
 
+@app.route('/courses/<int:course_id>/complete', methods=['POST'])
+@login_required
+def mark_course_completed(course_id):
+    course = Course.query.get_or_404(course_id)
+    course.completed_at = datetime.utcnow()
+    db.session.commit()
+    flash('Course marked as completed!', 'success')
+    return redirect(url_for('manage_courses'))
 if __name__ == '__main__':
     app.run(debug=True)
