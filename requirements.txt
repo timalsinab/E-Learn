@@ -19,3 +19,4 @@ flask_migrate==4.0.4
 python-dotenv==1.0.0
 twilio==7.15.0
 openai==0.28
+gunicorn==20.0.4
