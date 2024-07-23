@@ -1,32 +1,52 @@
+<!-- templates/courses.html -->
 {% extends "base.html" %}
-
-{% block title %}Manage Courses{% endblock %}
-
+{% block title %}Courses{% endblock %}
 {% block content %}
-<div class="container">
-    <h1 class="my-4">Courses</h1>
-    <form method="POST">
+<div class="container mt-4">
+    <h1>Courses</h1>
+    <!--<form method="POST" action="{{ url_for('manage_courses') }}" class="mb-4">
         <div class="form-group">
             <label for="title">Course Title</label>
-            <input type="text" class="form-control" id="title" name="title" required>
+            <input type="text" id="title" name="title" class="form-control" required>
         </div>
         <div class="form-group">
             <label for="description">Course Description</label>
-            <textarea class="form-control" id="description" name="description" required></textarea>
+            <textarea id="description" name="description" class="form-control" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="level">Level</label>
+            <select id="level" name="level" class="form-control">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
         </div>
         <button type="submit" class="btn btn-primary">Add Course</button>
-    </form>
-    <h2 class="my-4">Existing Courses</h2>
-    <ul class="list-group">
+    </form>-->
+
+    <h2>Existing Courses</h2>
+    <div class="list-group">
         {% for course in courses %}
-        <li class="list-group-item">
-            {{ course.title }} - {{ course.description }}
-            <form action="{{ url_for('delete_course', course_id=course.id) }}" method="POST" class="float-right">
-                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-            </form>
-            <a href="{{ url_for('manage_modules', course_id=course.id) }}" class="btn btn-secondary btn-sm float-right mr-2">Modules</a>
-        </li>
+        <div class="list-group-item">
+            <h5>{{ course.title }}</h5>
+            <p>{{ course.description }}</p>
+            <div class="d-flex justify-content-between">
+                <div>
+                    <form method="POST" action="{{ url_for('complete_course', course_id=course.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-success btn-sm">Mark as Completed</button>
+                    </form>
+                    <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-info btn-sm">View</a>
+                </div>
+                <form method="POST" action="{{ url_for('delete_course', course_id=course.id) }}" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </div>
+        </div>
         {% endfor %}
-    </ul>
+    </div>
+
+    <a href="{{ url_for('completed_courses') }}" class="btn btn-secondary mt-4">View Completed Courses</a>
+    <br>
+    <a href="{{ url_for('generate_course') }}" class="btn btn-secondary mt-4">Add a Course</a>
 </div>
 {% endblock %}
