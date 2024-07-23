@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}{% endblock %} - App Name</title>
+    <title>{% block title %}{% endblock %} - E-Learn</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
+      href="{{ url_for('static', filename='overlay.css') }}"
     />
     <link
       rel="stylesheet"
@@ -83,6 +83,20 @@
       {% endfor %} {% endif %} {% endwith %}{% block content %}{% endblock %}
     </div>
 
+    <!-- Chat overlay HTML -->
+    {% if request.endpoint != 'chat' %}
+    <div id="chat-overlay">
+      <div id="chatbox">
+        <div id="chat-output"></div>
+        <form id="chat-input-form">
+          <input type="text" id="chat-input" placeholder="Type your message...">
+          <button type="submit">Send</button>
+        </form>
+      </div>
+      <button id="chat-toggle">Chat</button>
+    </div>
+    {% endif %}
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -114,8 +128,8 @@
           .then(response => response.json())
           .then(data => {
             const chatOutput = document.getElementById('chat-output');
-            chatOutput.innerHTML += `<div>User: ${userInput}</div>`;
-            chatOutput.innerHTML += `<div>Bot: ${data.message}</div>`;
+            chatOutput.innerHTML += `<div class="user-message">User: ${userInput}</div>`;
+            chatOutput.innerHTML += `<div class="bot-message">Bot: ${data.message}</div>`;
             document.getElementById('chat-input').value = '';
             chatOutput.scrollTop = chatOutput.scrollHeight;
           })
