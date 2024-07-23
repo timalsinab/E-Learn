@@ -1,7 +1,3 @@
-Here’s the updated README with the project name "Elearn":
-
----
-
 # Elearn: Computer Science Interview Preparation Web App
 
 ## Table of Contents
