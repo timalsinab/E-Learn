@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container mt-4">
     <h1>Courses</h1>
-    <form method="POST" action="{{ url_for('manage_courses') }}" class="mb-4">
+    <!--<form method="POST" action="{{ url_for('manage_courses') }}" class="mb-4">
         <div class="form-group">
             <label for="title">Course Title</label>
             <input type="text" id="title" name="title" class="form-control" required>
@@ -22,7 +22,7 @@
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Add Course</button>
-    </form>
+    </form>-->
 
     <h2>Existing Courses</h2>
     <div class="list-group">
@@ -46,5 +46,7 @@
     </div>
 
     <a href="{{ url_for('completed_courses') }}" class="btn btn-secondary mt-4">View Completed Courses</a>
+    <br>
+    <a href="{{ url_for('generate_course') }}" class="btn btn-secondary mt-4">Add a Course</a>
 </div>
 {% endblock %}

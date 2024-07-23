@@ -279,7 +279,7 @@ def generate_course():
                 db.session.commit()
 
         flash('Course generated and saved successfully!', 'success')
-        return redirect(url_for('generate_course'))
+        return redirect(url_for('manage_courses'))
 
     return render_template('generate_course.html')
 
