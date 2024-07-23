@@ -27,7 +27,9 @@ class Course(db.Model):
     description = db.Column(db.String(250), nullable=False, unique=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     modules = db.relationship('Module', backref='course', lazy=True, cascade="all, delete-orphan")
-    
+    enrolled = db.Column(db.Boolean, default=False)
+    completed = db.Column(db.Boolean, default=False)  # Tracking course completion 
+    completed_at = db.Column(db.DateTime, nullable=True)  # For tracking date of course completion 
     def __repr__(self):
         return f"Course('{self.title}', '{self.description}')"
 
@@ -49,7 +51,7 @@ class Lesson(db.Model):
     title = db.Column(db.String(50), nullable=False, unique=True)
     content = db.Column(db.Text, nullable=False)
     quiz = db.Column(db.Text, nullable=True)  # Assuming quiz is stored as JSON or similar
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow())
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'), nullable=False)
 
     # Additional fields for completion status
