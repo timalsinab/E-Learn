@@ -1,3 +1,7 @@
+Here’s the updated README with the project name "Elearn":
+
+---
+
 # Elearn: Computer Science Interview Preparation Web App
 
 ## Table of Contents
@@ -82,4 +86,32 @@ Elearn is a web application designed to help computer science students prepare f
 - **Mock Interview:** Join the queue for a live mock interview with a peer.
 - **AI Tutor:** Interact with the AI tutor for assistance.
 
+## Routes and Endpoints
+- **Home Page:** `/home`
+- **Register:** `/register`
+- **Login:** `/login`
+- **Logout:** `/logout`
+- **Courses:** `/courses`
+- **Manage Courses:** `/courses/<int:course_id>/modules`
+- **Mock Interview:** `/mock_interview`
+- **Join Queue:** `/join_queue`
+- **Check Match:** `/check_match`
+- **Video Call:** `/video_call/<room_name>`
+- **AI Tutor Chat:** `/chat`
+
+## Contributing
+1. Fork the repository.
+2. Create a new feature branch.
+    ```bash
+    git checkout -b feature/your-feature
+    ```
+3. Commit your changes.
+    ```bash
+    git commit -m "Add your feature"
+    ```
+4. Push to the branch.
+    ```bash
+    git push origin feature/your-feature
+    ```
+5. Create a pull request.
 
