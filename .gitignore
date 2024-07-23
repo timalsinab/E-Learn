@@ -1,2 +1,6 @@
 # dont share environment variables
 .env
+
+# Byte-compiled / optimized / DLL files
+__pycache__
+migrations

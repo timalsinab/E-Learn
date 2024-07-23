@@ -28,7 +28,8 @@ class Course(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     modules = db.relationship('Module', backref='course', lazy=True, cascade="all, delete-orphan")
     enrolled = db.Column(db.Boolean, default=False)
-
+    completed = db.Column(db.Boolean, default=False)  # Tracking course completion 
+    completed_at = db.Column(db.DateTime, nullable=True)  # For tracking date of course completion 
     def __repr__(self):
         return f"Course('{self.title}', '{self.description}')"
 
