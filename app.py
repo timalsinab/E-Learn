@@ -33,6 +33,10 @@ def load_user(user_id):
 
 
 @app.route("/")
+def landing():
+    return render_template('landing.html')
+
+@app.route("/home")
 @login_required
 def home():
     return render_template('home.html')
