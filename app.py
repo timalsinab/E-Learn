@@ -8,8 +8,11 @@ from forms import LoginForm, RegistrationForm
 import os
 from bot import get_user_response
 from models import db , User, Course, Module, Lesson
+from openai import OpenAI
 
 
+api_key = os.environ.get("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
 app = Flask(__name__, instance_relative_config=True)
 app.config['SECRET_KEY'] = '9c7f5ed4fee35fed7a039ddba384397f'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../instance/site.db'
@@ -153,6 +156,160 @@ def chatting():
         bot_msg = get_user_response(user_msg)
         response = {'message': bot_msg}
         return jsonify(response), 200
+
+
+def generate_modules_and_lessons(course_title, course_description, level):
+    # Modify the prompt to include the user's level and request a more structured output
+    if level.lower() == 'beginner':
+        level_specific_prompt = (f"Generate 5 foundational modules for a course on {course_title} with the following description: {course_description}. "
+                                 f"The user is a beginner, so focus on introductory and basic concepts. Format each module as follows:\n"
+                                 f"Module Title: <title>\n"
+                                 f"Module Description: <description>\n"
+                                 f"Lessons:\n"
+                                 f"1. <Lesson Title>: <Lesson Description>\n"
+                                 f"2. <Lesson Title>: <Lesson Description>\n"
+                                 f"3. ...")
+    elif level.lower() == 'intermediate':
+        level_specific_prompt = (f"Generate 5 advanced modules for a course on {course_title} with the following description: {course_description}. "
+                                 f"The user is at an intermediate level, so avoid basic topics and focus on advanced concepts. Format each module as follows:\n"
+                                 f"Module Title: <title>\n"
+                                 f"Module Description: <description>\n"
+                                 f"Lessons:\n"
+                                 f"1. <Lesson Title>: <Lesson Description>\n"
+                                 f"2. <Lesson Title>: <Lesson Description>\n"
+                                 f"3. ...")
+    else:
+        level_specific_prompt = (f"Generate 5 expert-level modules for a course on {course_title} with the following description: {course_description}. "
+                                 f"The user is advanced, so focus on highly specialized and complex concepts. Format each module as follows:\n"
+                                 f"Module Title: <title>\n"
+                                 f"Module Description: <description>\n"
+                                 f"Lessons:\n"
+                                 f"1. <Lesson Title>: <Lesson Description>\n"
+                                 f"2. <Lesson Title>: <Lesson Description>\n"
+                                 f"3. ...")
+
+    # Generate modules using OpenAI
+    modules_response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": level_specific_prompt}],
+        max_tokens=1500  # Set max tokens to avoid exceeding the context length
+    )
+    modules_content = modules_response.choices[0].message.content.split('\n')
+
+    modules = []
+    module = None
+
+    for line in modules_content:
+        line = line.strip()
+        if line.startswith("Module Title:"):
+            if module:
+                modules.append(module)
+            module = {
+                "title": line.replace("Module Title:", "").strip(),
+                "description": "",
+                "lessons": []
+            }
+        elif line.startswith("Module Description:"):
+            module["description"] = line.replace("Module Description:", "").strip()
+        elif line.startswith("Lessons:") or line == "":
+            continue
+        elif line[0].isdigit() and line[1] == '.':
+            lesson_title, lesson_desc = line.split(":", 1)
+            lesson = {
+                "title": lesson_title.strip()[2:],  # remove the number and space
+                "content": lesson_desc.strip()
+            }
+            module["lessons"].append(lesson)
+
+    if module:
+        modules.append(module)
+
+    for module in modules:
+        for lesson in module["lessons"]:
+            self_check_prompt = f"Review and enhance the following lesson for a {level} level course on {course_title}: {lesson['content']}"
+            self_check_response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": self_check_prompt}],
+                max_tokens=500  # Set max tokens to avoid exceeding the context length
+            )
+            lesson["content"] = self_check_response.choices[0].message.content
+
+    return modules
+    # Verify the content using OpenAI
+    """self_check_results = []
+    for module in modules:
+        for lesson in module["lessons"]:
+            self_check_prompt = f"Verify if the following lesson is appropriate for a {level} level course on {course_title}: {lesson['content']}"
+            self_check_response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": self_check_prompt}],
+                max_tokens=500  # Set max tokens to avoid exceeding the context length
+            )
+            lesson["self_check_result"] = self_check_response.choices[0].message.content
+            self_check_results.append(lesson["self_check_result"])
+
+    return modules, self_check_results"""
+
+@app.route('/generate_course', methods=['GET', 'POST'])
+def generate_course():
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        level = request.form['level']
+
+        existing_course = Course.query.filter_by(description=description).first()
+        if existing_course:
+            flash('Course with this description already exists.', 'danger')
+            return redirect(url_for('generate_course'))
+
+        modules = generate_modules_and_lessons(title, description, level)
+        print(modules)
+        new_course = Course(title=title, description=description)
+        db.session.add(new_course)
+        db.session.commit()
+
+        for module_data in modules:
+            new_module = Module(title=module_data['title'], description=module_data['description'], course_id=new_course.id)
+            db.session.add(new_module)
+            db.session.commit()
+
+            for lesson_data in module_data['lessons']:
+                new_lesson = Lesson(title=lesson_data['title'], content=lesson_data['content'], module_id=new_module.id)
+                db.session.add(new_lesson)
+                db.session.commit()
+
+        flash('Course generated and saved successfully!', 'success')
+        return redirect(url_for('generate_course'))
+
+    return render_template('generate_course.html')
+
+@app.route('/courses/<int:course_id>', methods=['GET'])
+def view_course(course_id):
+    course = Course.query.get_or_404(course_id)
+    return render_template('view_course.html', course=course)
+
+
+@app.route("/interview", methods=['GET', 'POST'])
+@login_required 
+def interview():
+    """Route to handle the interview prep page. """
+    """Not set up yet"""
+    return render_template('interview.html')
+
+@app.route('/courses/<int:course_id>/complete', methods=['POST'])
+@login_required
+def complete_course(course_id):
+    course = Course.query.get_or_404(course_id)
+    course.completed = True
+    db.session.commit()
+    flash('Course marked as completed!', 'success')
+    return redirect(url_for('manage_courses'))
+
+@app.route('/completed_courses')
+@login_required
+def completed_courses():
+    completed_courses = Course.query.filter_by(completed=True).all()
+    return render_template('completed_courses.html', completed_courses=completed_courses)
 
 if __name__ == '__main__':
     app.run(debug=True)

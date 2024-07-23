@@ -1,0 +1,17 @@
+<!-- templates/completed_courses.html -->
+{% extends "base.html" %}
+{% block title %}Completed Courses{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h1>Completed Courses</h1>
+    <div class="list-group">
+        {% for course in completed_courses %}
+        <div class="list-group-item">
+            <h5>{{ course.title }}</apph5>
+            <p>{{ course.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <a href="{{ url_for('manage_courses') }}" class="btn btn-primary mt-4">Back to Courses</a>
+</div>
+{% endblock %}
